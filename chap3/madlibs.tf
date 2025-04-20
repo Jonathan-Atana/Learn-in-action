@@ -17,8 +17,8 @@ terraform {
 }
 
 # Resource block
-resource "random_shuffle" "random_nouns" {  // Shuffle all lists using the random resource
-  count = var.num_files  // create 'var.num_files' number of resources
+resource "random_shuffle" "random_nouns" { // Shuffle all lists using the random resource
+  count = var.num_files                    // create 'var.num_files' number of resources
   input = local.uppercase_words["nouns"]
 }
 
@@ -42,9 +42,9 @@ resource "random_shuffle" "random_numbers" {
   input = local.uppercase_words["numbers"]
 }
 
-resource "local_file" "mad_libs" {  // local files for mad libs stories
-  count = var.num_files
-  filename = "madlibs/madlibs-${count.index}.txt"  // filenames based on the count index
+resource "local_file" "mad_libs" { // local files for mad libs stories
+  count    = var.num_files
+  filename = "madlibs/madlibs-${count.index}.txt" // filenames based on the count index
   content = templatefile(
     element(local.templates, count.index),
     {
@@ -58,10 +58,10 @@ resource "local_file" "mad_libs" {  // local files for mad libs stories
 }
 
 # Data sources
-data "archive_file" "mad_libs" {  // Archive file to create a zip file of the mad libs files in madlibs folder
-  depends_on = [ local_file.mad_libs ]  // archive_file must be evaluated after all madlibs files are created
-  type = "zip"
-  source_dir = "${path.module}/madlibs"
+data "archive_file" "mad_libs" {      // Archive file to create a zip file of the mad libs files in madlibs folder
+  depends_on  = [local_file.mad_libs] // archive_file must be evaluated after all madlibs files are created
+  type        = "zip"
+  source_dir  = "${path.module}/madlibs"
   output_path = "${path.cwd}/madlibs.zip"
 }
 
@@ -79,14 +79,14 @@ locals {
   # get a list of all files names in the templates folder
   templates = tolist(
     fileset(
-      path.path.module,
+      path.module,
       "templates/*.txt"
     )
   )
 }
 
 # Input  variables
-variable "words" {  // Object for word pool
+variable "words" { // Object for word pool
   description = "A word pool to use for Mad Libs"
   type = object({
     nouns      = list(string),
@@ -98,13 +98,13 @@ variable "words" {  // Object for word pool
 
   validation {
     condition     = length(var.words["nouns"]) >= 12
-    error_message = "At least 20 nouns are required."
+    error_message = "At least 12 nouns are required."
   }
 }
 
-variable "num_files" {  // number of resources to create using count
+variable "num_files" { // number of resources to create using count
   description = "Number of resources to create"
   type        = number
   default     = 100
-  
+
 }
