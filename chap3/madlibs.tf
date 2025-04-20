@@ -1,15 +1,92 @@
-// Terraform block
+# Terraform block
 terraform {
   required_providers {
     random = {
       source  = "hashicorp/random"
       version = "~> 3.0"
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.0"
+    }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~> 2.0"
+    }
   }
 }
 
-// Object for word pool
-variable "words" {
+# Resource block
+resource "random_shuffle" "random_nouns" {  // Shuffle all lists using the random resource
+  count = var.num_files  // create 'var.num_files' number of resources
+  input = local.uppercase_words["nouns"]
+}
+
+resource "random_shuffle" "random_verbs" {
+  count = var.num_files
+  input = local.uppercase_words["verbs"]
+}
+
+resource "random_shuffle" "random_adverbs" {
+  count = var.num_files
+  input = local.uppercase_words["adverbs"]
+}
+
+resource "random_shuffle" "random_adjectives" {
+  count = var.num_files
+  input = local.uppercase_words["adjectives"]
+}
+
+resource "random_shuffle" "random_numbers" {
+  count = var.num_files
+  input = local.uppercase_words["numbers"]
+}
+
+resource "local_file" "mad_libs" {  // local files for mad libs stories
+  count = var.num_files
+  filename = "madlibs/madlibs-${count.index}.txt"  // filenames based on the count index
+  content = templatefile(
+    element(local.templates, count.index),
+    {
+      nouns      = random_shuffle.random_nouns[count.index].result
+      verbs      = random_shuffle.random_adjectives[count.index].result
+      adverbs    = random_shuffle.random_adverbs[count.index].result
+      adjectives = random_shuffle.random_adjectives[count.index].result
+      numbers    = random_shuffle.random_numbers[count.index].result
+    }
+  )
+}
+
+# Data sources
+data "archive_file" "mad_libs" {  // Archive file to create a zip file of the mad libs files in madlibs folder
+  depends_on = [ local_file.mad_libs ]  // archive_file must be evaluated after all madlibs files are created
+  type = "zip"
+  source_dir = "${path.module}/madlibs"
+  output_path = "${path.cwd}/madlibs.zip"
+}
+
+# Locals block
+locals {
+  # Name the expression to render all words uppercase (using locals)
+  uppercase_words = {
+    for key, values in var.words : key => [
+      for item in values : upper(item)
+    ]
+  }
+}
+
+locals {
+  # get a list of all files names in the templates folder
+  templates = tolist(
+    fileset(
+      path.path.module,
+      "templates/*.txt"
+    )
+  )
+}
+
+# Input  variables
+variable "words" {  // Object for word pool
   description = "A word pool to use for Mad Libs"
   type = object({
     nouns      = list(string),
@@ -25,38 +102,9 @@ variable "words" {
   }
 }
 
-// Shuffle all lists using the random resource
-resource "random_shuffle" "random_nouns" {
-  input = var.words["nouns"]
-}
-
-resource "random_shuffle" "random_verbs" {
-  input = var.words["verbs"]
-}
-
-resource "random_shuffle" "random_adverbs" {
-  input = var.words["adverbs"]
-}
-
-resource "random_shuffle" "random_adjectives" {
-  input = var.words["adjectives"]
-}
-
-resource "random_shuffle" "random_numbers" {
-  input = var.words["numbers"]
-}
-
-// Output variable to display the Mad Libs
-output "mad_libs" {
-  description = "Display Mad Libs stories using the templatefile function"
-  value = templatefile(
-    "${path.module}/templates/alice.txt",
-    {
-      nouns      = random_shuffle.random_nouns.result
-      verbs      = random_shuffle.random_adjectives.result
-      adverbs    = random_shuffle.random_adverbs.result
-      adjectives = random_shuffle.random_adjectives.result
-      numbers    = random_shuffle.random_numbers.result
-    }
-  )
+variable "num_files" {  // number of resources to create using count
+  description = "Number of resources to create"
+  type        = number
+  default     = 100
+  
 }
