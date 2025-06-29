@@ -25,12 +25,12 @@ The following diagram illustrates the high-level architecture of the deployed so
 
 ## Requirements
 
-| Name                                                                     | Version |
-| ------------------------------------------------------------------------ | ------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | ~> 1.0  |
-| <a name="requirement_aws"></a> [aws](#requirement_aws)                   | 5.99.0  |
-| <a name="requirement_cloudinit"></a> [cloudinit](#requirement_cloudinit) | ~> 2.1  |
-| <a name="requirement_random"></a> [random](#requirement_random)          | 3.7.1   |
+| Name      | Version |
+| --------- | ------- |
+| terraform | ~> 1.0  |
+| aws       | 5.99.0  |
+| cloudinit | ~> 2.1  |
+| random    | 3.7.1   |
 
 ## Providers
 
@@ -38,11 +38,11 @@ No providers.
 
 ## Modules
 
-| Name                                                                 | Source               | Version |
-| -------------------------------------------------------------------- | -------------------- | ------- |
-| <a name="module_autoscaling"></a> [autoscaling](#module_autoscaling) | ./modules/ASG        | n/a     |
-| <a name="module_database"></a> [database](#module_database)          | ./modules/database   | n/a     |
-| <a name="module_networking"></a> [networking](#module_networking)    | ./modules/networking | n/a     |
+| Name        | Source               | Version |
+| ----------- | -------------------- | ------- |
+| autoscaling | ./modules/ASG        | n/a     |
+| database    | ./modules/database   | n/a     |
+| networking  | ./modules/networking | n/a     |
 
 ## Resources
 
@@ -50,19 +50,19 @@ No resources.
 
 ## Inputs
 
-| Name                                                                  | Description                         | Type     | Default | Required |
-| --------------------------------------------------------------------- | ----------------------------------- | -------- | ------- | :------: |
-| <a name="input_env"></a> [env](#input_env)                            | Name of the project environment     | `string` | `"dev"` |    no    |
-| <a name="input_project_name"></a> [project_name](#input_project_name) | Name of the project                 | `string` | n/a     |   yes    |
-| <a name="input_region"></a> [region](#input_region)                   | AWS region for resources            | `string` | n/a     |   yes    |
-| <a name="input_ssh-keypair"></a> [ssh-keypair](#input_ssh-keypair)    | SSH keypair to use for EC2 instance | `string` | `null`  |    no    |
+| Name         | Description                         | Type     | Default | Required |
+| ------------ | ----------------------------------- | -------- | ------- | :------: |
+| env          | Name of the project environment     | `string` | "dev"   |    no    |
+| project_name | Name of the project                 | `string` | n/a     |   yes    |
+| region       | AWS region for resources            | `string` | n/a     |   yes    |
+| ssh-keypair  | SSH keypair to use for EC2 instance | `string` | `null`  |    no    |
 
 ## Outputs
 
-| Name                                                                 | Description                      |
-| -------------------------------------------------------------------- | -------------------------------- |
-| <a name="output_db-password"></a> [db-password](#output_db-password) | Password for the database        |
-| <a name="output_lb-dns-name"></a> [lb-dns-name](#output_lb-dns-name) | Domain name of the load balancer |
+| Name        | Description                      |
+| ----------- | -------------------------------- |
+| db-password | Password for the database        |
+| lb-dns-name | Domain name of the load balancer |
 
 <!-- END_TF_DOCS -->
 
@@ -123,5 +123,5 @@ module "autoscaling" {
 
 ## Footer
 
-© 2025 Jonathan Atana. All rights reserved.  
+© 2025 Jonathan Atana. All rights reserved.
 For questions or support, please open an issue or contact the maintainer.
