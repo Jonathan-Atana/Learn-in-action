@@ -60,7 +60,7 @@ module "db_sg" {
   vpc_id = module.vpc.vpc_id
 
   # allow traffic comming only from the webservers' security group
-  ingress_rule = [
+  ingress_rules = [
     {
         port = 3306
         security_groups = [module.websvr_sg.security_group.id]
